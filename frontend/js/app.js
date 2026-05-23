@@ -89,7 +89,7 @@ function gaugeColor(value, warning, danger) {
 /* ----- Panel ---- */
 function updatePanel(panel, iconEl, modoEl, tornoEl, tempEl, vibEl, estado) {
   const isEmergencia = estado.paro_emergencia;
-  const isAlerta = estado.alerta_activa === "PREDICTIVA_AMARILLA";
+  const isAlerta = estado.alerta_activa === "PREDICTIVA_AMARILLA" || estado.alerta_activa === "ALERTA_AMARILLA";
 
   panel.className = "panel-control";
   if (isEmergencia) panel.classList.add("emergencia");
@@ -99,7 +99,7 @@ function updatePanel(panel, iconEl, modoEl, tornoEl, tempEl, vibEl, estado) {
   modoEl.textContent = isEmergencia
     ? "PARO DE EMERGENCIA"
     : isAlerta
-    ? "ALERTA PREDICTIVA"
+    ? "ALERTA"
     : "OPERACIÓN NORMAL";
   tornoEl.textContent = `Torno #${estado.torno_id}`;
   tempEl.textContent = `${estado.temperatura.toFixed(1)}°C`;
@@ -126,7 +126,7 @@ function updateGauges(estado) {
 
 function updateBodyBg(estado) {
   const isEmergencia = estado.paro_emergencia;
-  const isAlerta = estado.alerta_activa === "PREDICTIVA_AMARILLA";
+  const isAlerta = estado.alerta_activa === "PREDICTIVA_AMARILLA" || estado.alerta_activa === "ALERTA_AMARILLA";
   document.body.className = "";
   if (isEmergencia) document.body.classList.add("emergencia-bg");
   else if (isAlerta) document.body.classList.add("alerta-bg");
@@ -171,9 +171,9 @@ function renderAlertas() {
   alertasLista.innerHTML = alertas
     .map((a) => {
       const isRoja = a.tipo_alerta === "EMERGENCIA_ROJA";
-      const isAmarilla = a.tipo_alerta === "PREDICTIVA_AMARILLA";
+      const isAmarilla = a.tipo_alerta === "PREDICTIVA_AMARILLA" || a.tipo_alerta === "ALERTA_AMARILLA";
       const cls = `alerta-card${isRoja ? " roja" : ""}${isAmarilla ? " amarilla" : ""}${a.atendida === 1 ? " atendida" : ""}`;
-      const tipo = isRoja ? "🚨 EMERGENCIA" : "⚠ PREDICTIVA";
+      const tipo = isRoja ? "🚨 EMERGENCIA" : a.tipo_alerta === "ALERTA_AMARILLA" ? "⚠ ALERTA" : "⚠ PREDICTIVA";
       const fecha = new Date(a.timestamp).toLocaleTimeString();
       const atendidaHtml = a.atendida === 1 ? '<div class="alerta-atendida">✓ Atendida</div>' : "";
       return `
@@ -215,13 +215,13 @@ function formatearFechaLocal(iso) {
 
 function estadoHtml(tipo) {
   if (tipo === "EMERGENCIA_ROJA") return '<span class="estado-badge rojo">🔴 Emergencia</span>';
-  if (tipo === "PREDICTIVA_AMARILLA") return '<span class="estado-badge amarillo">🟡 Alerta</span>';
+  if (tipo === "PREDICTIVA_AMARILLA" || tipo === "ALERTA_AMARILLA") return '<span class="estado-badge amarillo">🟡 Alerta</span>';
   return '<span class="estado-badge verde">✅ Normal</span>';
 }
 
 function estadoClase(tipo) {
   if (tipo === "EMERGENCIA_ROJA") return "roja";
-  if (tipo === "PREDICTIVA_AMARILLA") return "amarilla";
+  if (tipo === "PREDICTIVA_AMARILLA" || tipo === "ALERTA_AMARILLA") return "amarilla";
   return "normal";
 }
 

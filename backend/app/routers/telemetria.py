@@ -112,8 +112,7 @@ async def _verificar_alertas(
         _ultimo_guardado[torno_id] = datetime.now().timestamp()
         return "EMERGENCIA_ROJA"
 
-    analizador.agregar_lectura(temp, vib_total)
-    resultado = analizador._ultimo_resultado
+    resultado = analizador.analizar(temp, vib_total)
     es_predictivo = resultado.probabilidad >= 0.5
 
     if es_amarillo or es_predictivo:
@@ -129,6 +128,22 @@ async def _verificar_alertas(
                 )
             )
             await db.commit()
+
+        if es_amarillo and _puede_crear_alerta(torno_id, "ALERTA_AMARILLA"):
+            alerta = AlertaMantenimiento(
+                torno_id=torno_id,
+                tipo_alerta="ALERTA_AMARILLA",
+                descripcion=(
+                    f"Alerta Amarilla - Temperatura: {temp:.1f}°C, "
+                    f"Vibración: {vib_total:.2f}G"
+                ),
+            )
+            db.add(alerta)
+            await db.commit()
+            await db.refresh(alerta)
+            await manager.broadcast_alerta(
+                torno_id, _alerta_to_dict(alerta)
+            )
 
         if es_predictivo and not es_amarillo and _puede_crear_alerta(torno_id, "PREDICTIVA_AMARILLA"):
             pend_vib = analizador.pendiente_vibracion() or 0
@@ -150,7 +165,7 @@ async def _verificar_alertas(
                 torno_id, _alerta_to_dict(alerta)
             )
 
-        return "PREDICTIVA_AMARILLA"
+        return "PREDICTIVA_AMARILLA" if es_predictivo else "ALERTA_AMARILLA"
 
     return None
 
