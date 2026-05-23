@@ -157,6 +157,19 @@ function updatePrediccion(p) {
   predPendVib.textContent = p.pendiente_vibracion != null ? p.pendiente_vibracion.toFixed(4) : "—";
 }
 
+function resetPrediccion() {
+  predBar.style.width = "0%";
+  predValue.textContent = "—";
+  predBar.style.background = "#333";
+  predValue.style.color = "#666";
+  predSeveridad.textContent = "—";
+  predSeveridad.className = "pred-severidad";
+  predRul.textContent = "—";
+  predModo.textContent = "—";
+  predPendTemp.textContent = "—";
+  predPendVib.textContent = "—";
+}
+
 /* ----- Alertas ---- */
 function renderAlertas() {
   if (alertas.length === 0) {
@@ -321,6 +334,7 @@ function reiniciarWatchdog() {
   estadoTimeout = setTimeout(() => {
     statusDot.classList.remove("online");
     statusText.textContent = "Sin datos · Torno #1";
+    resetPrediccion();
   }, ESTADO_TIMEOUT_MS);
 }
 
@@ -340,6 +354,7 @@ function conectarWS() {
     estadoTimeout = setTimeout(() => {
       statusDot.classList.remove("online");
       statusText.textContent = "Sin datos · Torno #1";
+      resetPrediccion();
     }, ESTADO_TIMEOUT_MS);
   };
 

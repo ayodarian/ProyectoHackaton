@@ -21,6 +21,7 @@ router = APIRouter(prefix="/api", tags=["Telemetria"])
 
 _ultimo_guardado: dict[int, float] = {}
 _ultima_alerta: dict[int, dict[str, float]] = {}
+_ultimo_telemetria: dict[int, float] = {}
 
 
 def _puede_crear_alerta(torno_id: int, tipo: str) -> bool:
@@ -188,6 +189,12 @@ async def recibir_telemetria(
     vib_total = _calcular_vib_total(
         data.vibracion_x, data.vibracion_y, data.vibracion_z
     )
+
+    ahora = datetime.now().timestamp()
+    ultimo = _ultimo_telemetria.get(data.torno_id, 0)
+    if ahora - ultimo > settings.intervalo_guardado_amarillo:
+        analizador.reset()
+    _ultimo_telemetria[data.torno_id] = ahora
 
     alerta_activa = await _verificar_alertas(
         db, data.torno_id, data.temperatura, vib_total,

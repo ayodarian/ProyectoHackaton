@@ -44,9 +44,9 @@ class PredictiveEngine:
         ace_vib = self._calcular_aceleracion("vib")
         corr = self._calcular_correlacion()
 
-        prob_temp = self._sigmoid(abs(pend_temp or 0), k=4, x0=0.3)
-        prob_vib = self._sigmoid(abs(pend_vib or 0), k=20, x0=0.05)
-        prob_corr = self._sigmoid(abs(corr or 0), k=4, x0=0.6) * 0.6
+        prob_temp = self._escala_lineal(abs(pend_temp or 0), 0.3)
+        prob_vib = self._escala_lineal(abs(pend_vib or 0), 0.05)
+        prob_corr = self._escala_lineal(abs(corr or 0), 0.6) * 0.6
         prob_ace_temp = self._escala_lineal(max(0, ace_temp or 0), 0.03) * 0.7
         prob_ace_vib = self._escala_lineal(max(0, ace_vib or 0), 0.008) * 0.7
         prob_umbral_temp = self._sigmoid(temperatura, k=0.8, x0=settings.temp_alerta_amarilla)
@@ -87,6 +87,10 @@ class PredictiveEngine:
 
     def es_anomalia_predictiva(self) -> bool:
         return self._ultimo_resultado.probabilidad >= 0.5
+
+    def reset(self) -> None:
+        self._buffer.clear()
+        self._ultimo_resultado = AnalisisResult()
 
     def _calcular_pendiente(self, clave: str) -> float | None:
         if len(self._buffer) < 2:

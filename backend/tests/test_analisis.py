@@ -56,7 +56,7 @@ class TestPredictiveEngine:
         temp = 30.0
         for _ in range(30):
             res = engine.analizar(temp, 1.1)
-            temp += 0.3
+            temp += 0.1
         assert res.severidad in ("OBSERVACION", "ADVERTENCIA")
 
     def test_clasificacion_severidad_advertencia(self):
@@ -64,7 +64,7 @@ class TestPredictiveEngine:
         temp = 30.0
         for _ in range(30):
             res = engine.analizar(temp, 1.1)
-            temp += 0.6
+            temp += 0.2
         assert res.severidad in ("ADVERTENCIA", "CRITICA")
 
     def test_modo_termico_detectado(self):
