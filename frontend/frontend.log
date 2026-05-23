@@ -1,0 +1,19 @@
+127.0.0.1 - - [22/May/2026 23:52:38] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [22/May/2026 23:52:53] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [22/May/2026 23:52:53] "GET /css/styles.css HTTP/1.1" 304 -
+127.0.0.1 - - [22/May/2026 23:52:53] "GET /js/api.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/May/2026 23:52:53] "GET /js/app.js HTTP/1.1" 304 -
+127.0.0.1 - - [22/May/2026 23:52:56] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [23/May/2026 07:36:11] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 07:36:11] "GET /css/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 07:36:11] "GET /js/api.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 07:36:11] "GET /js/app.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 07:36:12] code 404, message File not found
+127.0.0.1 - - [23/May/2026 07:36:12] "GET /favicon.ico HTTP/1.1" 404 -
+14/http/server.py", line 148, in server_bind
+    socketserver.TCPServer.server_bind(self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib64/python3.14/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 98] Address already in use

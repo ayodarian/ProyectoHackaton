@@ -45,7 +45,7 @@ class PredictiveEngine:
         ace_vib = self._calcular_aceleracion("vib")
         corr = self._calcular_correlacion()
 
-        prob_umbral_temp = self._sigmoid(temperatura, k=0.8, x0=settings.temp_alerta_amarilla)
+        prob_umbral_temp = self._sigmoid(temperatura, k=0.8, x0=35)
         prob_umbral_vib = self._sigmoid(vibracion_total, k=3, x0=settings.vibracion_alerta_amarilla)
         prob_inactividad = self._escala_lineal(tiempo_inactividad, 30)
 

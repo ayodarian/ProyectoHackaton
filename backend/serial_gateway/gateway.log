@@ -1,3 +1,10 @@
 [gateway] starting with 1 device(s)
 [t#1] opened /dev/ttyUSB0 @ 9600 baud
 [t#1] WS connected
+[t#1] status: EMERGENCIA activada
+[t#1] -> {"type": "command", "action": "paro_emergencia", "value": true}
+[t#1] -> {"type": "command", "action": "paro_emergencia", "value": false}
+[t#1] -> {"type": "command", "action": "paro_emergencia", "value": true}
+[t#1] -> {"type": "command", "action": "paro_emergencia", "value": false}
+[t#1] -> {"type": "command", "action": "paro_emergencia", "value": true}
+[t#1] -> {"type": "command", "action": "paro_emergencia", "value": false}
