@@ -15,7 +15,7 @@ const int pinLedRojo = 12;
 
 const int TORNO_ID = 1;
 const float VIB_MAX = 5.0;
-const unsigned long INTERVALO_MS = 2000;
+const unsigned long INTERVALO_MS = 800;
 
 bool emergenciaActiva = false;
 unsigned long ultimoEnvio = 0;

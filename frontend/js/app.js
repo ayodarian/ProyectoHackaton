@@ -7,7 +7,7 @@ let reconnectTimeout = null;
 let estadoTimeout = null;
 let prediccionPollTimeout = null;
 const ESTADO_TIMEOUT_MS = 3000;
-const POLL_INTERVAL_MS = 5000;
+const POLL_INTERVAL_MS = 200;
 
 /* ----- DOM refs ----- */
 const $ = (s) => document.querySelector(s);

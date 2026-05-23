@@ -35,7 +35,7 @@ class PredictiveEngine:
     def analizar(self, temperatura: float, vibracion_total: float, tiempo_inactividad: float = 0.0) -> AnalisisResult:
         self.agregar_lectura(temperatura, vibracion_total)
 
-        if len(self._buffer) < 5:
+        if len(self._buffer) < 3:
             self._ultimo_resultado = AnalisisResult()
             return self._ultimo_resultado
 
