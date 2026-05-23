@@ -13,3 +13,4 @@ backend/sistema_iiot.db
 
 # macOS
 .DS_Store
+*.db

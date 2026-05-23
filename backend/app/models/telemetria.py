@@ -16,7 +16,7 @@ class TelemetriaTorno(Base):
     vibracion_y: Mapped[float] = mapped_column(Float, nullable=False)
     vibracion_z: Mapped[float] = mapped_column(Float, nullable=False)
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime, server_default=func.now()
+        DateTime, server_default=func.datetime('now', 'localtime')
     )
 
 
@@ -33,7 +33,7 @@ class RegistroFallo(Base):
         String(20), nullable=True
     )
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime, server_default=func.now()
+        DateTime, server_default=func.datetime('now', 'localtime')
     )
 
 
@@ -48,7 +48,7 @@ class AlertaMantenimiento(Base):
     descripcion: Mapped[str] = mapped_column(Text, nullable=True)
     atendida: Mapped[int] = mapped_column(Integer, default=0)
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime, server_default=func.now()
+        DateTime, server_default=func.datetime('now', 'localtime')
     )
 
 
@@ -66,5 +66,5 @@ class PrediccionFallo(Base):
     correlacion: Mapped[float | None] = mapped_column(Float, nullable=True)
     inactividad: Mapped[float | None] = mapped_column(Float, nullable=True)
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime, server_default=func.now()
+        DateTime, server_default=func.datetime('now', 'localtime')
     )
