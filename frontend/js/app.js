@@ -29,6 +29,16 @@ const gVib = $("#gaugeVib");
 const gTempVal = $("#gaugeTempValue");
 const gVibVal = $("#gaugeVibValue");
 
+/* ----- Prediccion card ----- */
+const predCard = $("#predCard");
+const predBar = $("#predBar");
+const predValue = $("#predValue");
+const predRul = $("#predRul");
+const predModo = $("#predModo");
+const predPendTemp = $("#predPendTemp");
+const predPendVib = $("#predPendVib");
+const predSeveridad = $("#predSeveridad");
+
 /* ----- Panel supervisor ----- */
 const sIcon = $("#sPanelIcon");
 const sModo = $("#sPanelModo");
@@ -120,6 +130,31 @@ function updateBodyBg(estado) {
   document.body.className = "";
   if (isEmergencia) document.body.classList.add("emergencia-bg");
   else if (isAlerta) document.body.classList.add("alerta-bg");
+}
+
+/* ----- Prediccion ----- */
+function updatePrediccion(p) {
+  const pctVal = Math.round(p.probabilidad * 100);
+  predBar.style.width = `${pctVal}%`;
+  predValue.textContent = `${pctVal}%`;
+
+  let color = "#00ff88";
+  if (p.probabilidad >= 0.8) color = "#da3633";
+  else if (p.probabilidad >= 0.6) color = "#d29922";
+  else if (p.probabilidad >= 0.3) color = "#2f81f7";
+  predBar.style.background = color;
+  predValue.style.color = color;
+
+  predSeveridad.textContent = p.severidad || "—";
+  predSeveridad.className = "pred-severidad";
+  if (p.severidad === "CRITICA") predSeveridad.classList.add("critica");
+  else if (p.severidad === "ADVERTENCIA") predSeveridad.classList.add("advertencia");
+  else if (p.severidad === "OBSERVACION") predSeveridad.classList.add("observacion");
+
+  predRul.textContent = p.rul_estimado != null ? `${p.rul_estimado}s` : "—";
+  predModo.textContent = p.modo_fallo || "—";
+  predPendTemp.textContent = p.pendiente_temperatura != null ? p.pendiente_temperatura.toFixed(4) : "—";
+  predPendVib.textContent = p.pendiente_vibracion != null ? p.pendiente_vibracion.toFixed(4) : "—";
 }
 
 /* ----- Alertas ---- */
@@ -321,7 +356,9 @@ function conectarWS() {
         updateBodyBg(e);
       }
 
-      if (msg.type === "alerta") {
+      if (msg.type === "prediccion") {
+        updatePrediccion(msg.data);
+      }
         const idx = alertas.findIndex((a) => a.id === msg.data.id);
         if (idx >= 0) {
           alertas[idx] = msg.data;

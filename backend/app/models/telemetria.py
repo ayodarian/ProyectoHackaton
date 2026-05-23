@@ -50,3 +50,20 @@ class AlertaMantenimiento(Base):
     timestamp: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now()
     )
+
+
+class PrediccionFallo(Base):
+    __tablename__ = "predicciones_fallo"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    torno_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    probabilidad: Mapped[float] = mapped_column(Float, nullable=False)
+    severidad: Mapped[str] = mapped_column(String(20), nullable=False)
+    modo_fallo: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    rul_estimado: Mapped[float | None] = mapped_column(Float, nullable=True)
+    pendiente_temperatura: Mapped[float | None] = mapped_column(Float, nullable=True)
+    pendiente_vibracion: Mapped[float | None] = mapped_column(Float, nullable=True)
+    correlacion: Mapped[float | None] = mapped_column(Float, nullable=True)
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now()
+    )

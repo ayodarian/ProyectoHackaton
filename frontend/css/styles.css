@@ -546,3 +546,120 @@ body.emergencia-bg {
 body.alerta-bg {
   animation: pulseAmarillo 1.2s infinite;
 }
+
+/* ---- PREDICCION CARD ---- */
+.prediccion-card {
+  background: #0d1b2a;
+  border: 1px solid #21262d;
+  border-radius: 12px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.pred-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  background: #161b22;
+  border-bottom: 1px solid #21262d;
+  color: #8b949e;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pred-icon {
+  font-size: 16px;
+}
+
+.pred-severidad {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  color: #8b949e;
+}
+
+.pred-severidad.observacion {
+  border-color: #2f81f7;
+  color: #58a6ff;
+}
+
+.pred-severidad.advertencia {
+  border-color: #d29922;
+  color: #e3b341;
+}
+
+.pred-severidad.critica {
+  border-color: #da3633;
+  color: #ff6b6b;
+}
+
+.pred-body {
+  padding: 16px 20px 20px;
+}
+
+.pred-section {
+  margin-bottom: 16px;
+}
+
+.pred-label {
+  color: #8b949e;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.pred-bar-bg {
+  height: 20px;
+  background: #21262d;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pred-bar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease, background 0.3s;
+}
+
+.pred-value {
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+  transition: color 0.3s;
+}
+
+.pred-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pred-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pred-metric-label {
+  color: #8b949e;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pred-metric-val {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e6edf3;
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+}

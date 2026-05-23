@@ -39,6 +39,11 @@ class ConnectionManager:
     ) -> None:
         await self.broadcast(torno_id, {"type": "alerta", "data": alerta})
 
+    async def broadcast_prediccion(
+        self, torno_id: int, prediccion: dict
+    ) -> None:
+        await self.broadcast(torno_id, {"type": "prediccion", "data": prediccion})
+
     def set_ultimo_estado(self, torno_id: int, estado: dict) -> None:
         self._ultimo_estado[torno_id] = estado
 

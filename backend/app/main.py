@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import init_db
-from app.routers import alertas, hardware, registros, telemetria, ws
+from app.routers import alertas, hardware, predicciones, registros, telemetria, ws
 
 
 @asynccontextmanager
@@ -33,3 +33,4 @@ app.include_router(alertas.router)
 app.include_router(hardware.router)
 app.include_router(ws.router)
 app.include_router(registros.router)
+app.include_router(predicciones.router)

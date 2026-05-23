@@ -54,5 +54,26 @@ class EstadoActualResponse(BaseModel):
     paro_emergencia: bool
 
 
+class PrediccionResponse(BaseModel):
+    probabilidad: float
+    severidad: str
+    modo_fallo: str | None = None
+    rul_estimado: float | None = None
+    pendiente_temperatura: float | None = None
+    pendiente_vibracion: float | None = None
+    aceleracion_temperatura: float | None = None
+    aceleracion_vibracion: float | None = None
+    correlacion: float | None = None
+    timestamp: datetime | None = None
+
+    model_config = {"from_attributes": True}
+
+
+class PrediccionActualResponse(BaseModel):
+    torno_id: int
+    prediccion: PrediccionResponse | None = None
+    estado_actual: EstadoActualResponse | None = None
+
+
 class ControlHardwareResponse(BaseModel):
     paro_emergencia: bool

@@ -50,6 +50,41 @@
           <div class="gauge-value" id="gaugeVibValue">-- G</div>
         </div>
       </div>
+
+      <div class="prediccion-card" id="predCard">
+        <div class="pred-header">
+          <span class="pred-icon">🔮</span>
+          <span>Análisis Predictivo</span>
+          <span class="pred-severidad" id="predSeveridad">—</span>
+        </div>
+        <div class="pred-body">
+          <div class="pred-section">
+            <div class="pred-label">Probabilidad de fallo</div>
+            <div class="pred-bar-bg">
+              <div class="pred-bar" id="predBar" style="width:0%"></div>
+            </div>
+            <div class="pred-value" id="predValue">0%</div>
+          </div>
+          <div class="pred-metrics">
+            <div class="pred-metric">
+              <span class="pred-metric-label">RUL Estimado</span>
+              <strong class="pred-metric-val" id="predRul">--</strong>
+            </div>
+            <div class="pred-metric">
+              <span class="pred-metric-label">Modo</span>
+              <strong class="pred-metric-val" id="predModo">--</strong>
+            </div>
+            <div class="pred-metric">
+              <span class="pred-metric-label">Tendencia T°</span>
+              <strong class="pred-metric-val" id="predPendTemp">--</strong>
+            </div>
+            <div class="pred-metric">
+              <span class="pred-metric-label">Tendencia Vib</span>
+              <strong class="pred-metric-val" id="predPendVib">--</strong>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- SUPERVISOR VIEW -->

@@ -8,12 +8,13 @@ from app.config import settings
 from app.database import get_db
 from app.models.telemetria import (
     AlertaMantenimiento,
+    PrediccionFallo,
     RegistroFallo,
     TelemetriaTorno,
 )
 from app.schemas.telemetria import TelemetriaRequest, TelemetriaResponse
 from app.services.analisis import analizador
-from app.services.ollama_client import generar_reporte_tecnico
+from app.services.ollama_client import clasificar_fallo_ollama, generar_reporte_tecnico
 from app.ws_manager import manager
 
 router = APIRouter(prefix="/api", tags=["Telemetria"])
@@ -96,7 +97,8 @@ async def _verificar_alertas(
         return "EMERGENCIA_ROJA"
 
     analizador.agregar_lectura(temp, vib_total)
-    es_predictivo = analizador.es_anomalia_predictiva()
+    resultado = analizador._ultimo_resultado
+    es_predictivo = resultado.probabilidad >= 0.5
 
     if es_amarillo or es_predictivo:
         if _puede_guardar(torno_id):
@@ -169,6 +171,34 @@ async def recibir_telemetria(
     await _broadcast_estado(
         db, data.torno_id, data.temperatura, vib_total, alerta_activa, paro
     )
+
+    resultado = analizador._ultimo_resultado
+    if resultado.probabilidad > 0:
+        pred_dict = {
+            "probabilidad": resultado.probabilidad,
+            "severidad": resultado.severidad,
+            "modo_fallo": resultado.modo_fallo,
+            "rul_estimado": resultado.rul_estimado,
+            "pendiente_temperatura": resultado.pendiente_temperatura,
+            "pendiente_vibracion": resultado.pendiente_vibracion,
+            "aceleracion_temperatura": resultado.aceleracion_temperatura,
+            "aceleracion_vibracion": resultado.aceleracion_vibracion,
+            "correlacion": resultado.correlacion,
+        }
+        await manager.broadcast_prediccion(data.torno_id, pred_dict)
+
+        if resultado.probabilidad >= 0.3:
+            db.add(PrediccionFallo(
+                torno_id=data.torno_id,
+                probabilidad=resultado.probabilidad,
+                severidad=resultado.severidad,
+                modo_fallo=resultado.modo_fallo,
+                rul_estimado=resultado.rul_estimado,
+                pendiente_temperatura=resultado.pendiente_temperatura,
+                pendiente_vibracion=resultado.pendiente_vibracion,
+                correlacion=resultado.correlacion,
+            ))
+            await db.commit()
 
     return TelemetriaResponse(
         id=0,
