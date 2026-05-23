@@ -18,7 +18,7 @@ class TestPredictiveEngine:
     def test_tendencia_alza_temperatura_aumenta_probabilidad(self):
         engine = PredictiveEngine(ventana=50)
         temp = 30.0
-        for _ in range(25):
+        for _ in range(18):
             res = engine.analizar(temp, 1.1)
             temp += 0.8
         assert res.probabilidad >= 0.3
@@ -70,7 +70,7 @@ class TestPredictiveEngine:
     def test_modo_termico_detectado(self):
         engine = PredictiveEngine(ventana=50)
         temp = 30.0
-        for _ in range(25):
+        for _ in range(18):
             res = engine.analizar(temp, 1.1)
             temp += 0.8
         if res.probabilidad >= 0.3:
@@ -139,3 +139,17 @@ class TestPredictiveEngine:
         prob_ia2 = 0.1
         prob_final2 = round(prob_mate2 * 0.7 + prob_ia2 * 0.3, 4)
         assert prob_final2 == 0.17
+
+    def test_paro_emergencia_probabilidad_100(self):
+        engine = PredictiveEngine(ventana=10)
+        res = engine.analizar(36.0, 1.1, paro_emergencia=True)
+        assert res.probabilidad == 1.0
+        assert res.severidad == "CRITICA"
+        assert res.modo_fallo == "PARO_EMERGENCIA"
+
+    def test_temp_45_probabilidad_100(self):
+        engine = PredictiveEngine(ventana=10)
+        res = engine.analizar(45.0, 1.1)
+        assert res.probabilidad == 1.0
+        assert res.severidad == "CRITICA"
+        assert res.modo_fallo == "PARO_EMERGENCIA"

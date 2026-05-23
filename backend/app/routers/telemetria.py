@@ -219,28 +219,33 @@ async def recibir_telemetria(
     )
 
     resultado = analizador._ultimo_resultado
-    prob_matematica = resultado.probabilidad
 
-    prob_final = prob_matematica
-    if prob_matematica > 0:
-        ahora_ia = datetime.now().timestamp()
-        ultima_ia = _ultima_consulta_ia.get(data.torno_id, 0)
-        if ahora_ia - ultima_ia >= settings.intervalo_ajuste_ia:
-            _ultima_consulta_ia[data.torno_id] = ahora_ia
-            probabilidad_ia = await ajustar_probabilidad_ollama(
-                data.torno_id, data.temperatura, vib_total,
-                resultado.pendiente_temperatura,
-                resultado.pendiente_vibracion,
-                resultado.correlacion,
-                prob_matematica,
-            )
-            prob_final = round(prob_matematica * 0.7 + probabilidad_ia * 0.3, 4)
+    if paro:
+        prob_final = 1.0
+        severidad = "CRITICA"
+        modo_fallo = "PARO_EMERGENCIA"
+    else:
+        prob_matematica = resultado.probabilidad
+        prob_final = prob_matematica
+        if prob_matematica > 0:
+            ahora_ia = datetime.now().timestamp()
+            ultima_ia = _ultima_consulta_ia.get(data.torno_id, 0)
+            if ahora_ia - ultima_ia >= settings.intervalo_ajuste_ia:
+                _ultima_consulta_ia[data.torno_id] = ahora_ia
+                probabilidad_ia = await ajustar_probabilidad_ollama(
+                    data.torno_id, data.temperatura, vib_total,
+                    resultado.pendiente_temperatura,
+                    resultado.pendiente_vibracion,
+                    resultado.correlacion,
+                    prob_matematica,
+                )
+                prob_final = round(prob_matematica * 0.7 + probabilidad_ia * 0.3, 4)
 
     if prob_final > 0:
         pred_dict = {
             "probabilidad": prob_final,
-            "severidad": resultado.severidad,
-            "modo_fallo": resultado.modo_fallo,
+            "severidad": "CRITICA" if paro else resultado.severidad,
+            "modo_fallo": "PARO_EMERGENCIA" if paro else resultado.modo_fallo,
             "rul_estimado": resultado.rul_estimado,
             "pendiente_temperatura": resultado.pendiente_temperatura,
             "pendiente_vibracion": resultado.pendiente_vibracion,

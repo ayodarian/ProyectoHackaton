@@ -32,7 +32,16 @@ class PredictiveEngine:
     def agregar_lectura(self, temperatura: float, vibracion_total: float) -> None:
         self._buffer.append({"temp": temperatura, "vib": vibracion_total})
 
-    def analizar(self, temperatura: float, vibracion_total: float, tiempo_inactividad: float = 0.0) -> AnalisisResult:
+    def analizar(self, temperatura: float, vibracion_total: float, tiempo_inactividad: float = 0.0, paro_emergencia: bool = False) -> AnalisisResult:
+        if paro_emergencia or temperatura >= 45:
+            self._ultimo_resultado = AnalisisResult(
+                probabilidad=1.0,
+                severidad="CRITICA",
+                modo_fallo="PARO_EMERGENCIA",
+                inactividad=round(tiempo_inactividad, 1),
+            )
+            return self._ultimo_resultado
+
         self.agregar_lectura(temperatura, vibracion_total)
 
         if len(self._buffer) < 3:
