@@ -5,7 +5,9 @@ let ws = null;
 let alertas = [];
 let reconnectTimeout = null;
 let estadoTimeout = null;
+let prediccionPollTimeout = null;
 const ESTADO_TIMEOUT_MS = 3000;
+const POLL_INTERVAL_MS = 5000;
 
 /* ----- DOM refs ----- */
 const $ = (s) => document.querySelector(s);
@@ -37,6 +39,7 @@ const predRul = $("#predRul");
 const predModo = $("#predModo");
 const predPendTemp = $("#predPendTemp");
 const predPendVib = $("#predPendVib");
+const predInactividad = $("#predInactividad");
 const predSeveridad = $("#predSeveridad");
 
 /* ----- Panel supervisor ----- */
@@ -155,6 +158,7 @@ function updatePrediccion(p) {
   predModo.textContent = p.modo_fallo || "—";
   predPendTemp.textContent = p.pendiente_temperatura != null ? p.pendiente_temperatura.toFixed(4) : "—";
   predPendVib.textContent = p.pendiente_vibracion != null ? p.pendiente_vibracion.toFixed(4) : "—";
+  predInactividad.textContent = p.inactividad != null ? `${p.inactividad}s` : "—";
 }
 
 function resetPrediccion() {
@@ -168,6 +172,7 @@ function resetPrediccion() {
   predModo.textContent = "—";
   predPendTemp.textContent = "—";
   predPendVib.textContent = "—";
+  predInactividad.textContent = "—";
 }
 
 /* ----- Alertas ---- */
@@ -334,7 +339,6 @@ function reiniciarWatchdog() {
   estadoTimeout = setTimeout(() => {
     statusDot.classList.remove("online");
     statusText.textContent = "Sin datos · Torno #1";
-    resetPrediccion();
   }, ESTADO_TIMEOUT_MS);
 }
 
@@ -354,7 +358,6 @@ function conectarWS() {
     estadoTimeout = setTimeout(() => {
       statusDot.classList.remove("online");
       statusText.textContent = "Sin datos · Torno #1";
-      resetPrediccion();
     }, ESTADO_TIMEOUT_MS);
   };
 
@@ -412,5 +415,19 @@ async function cargarAlertasIniciales() {
   }
 }
 
+async function pollPrediccionActual() {
+  try {
+    const resp = await fetch("http://localhost:8000/api/predicciones/actual");
+    const data = await resp.json();
+    if (data.prediccion && data.prediccion.probabilidad > 0) {
+      updatePrediccion(data.prediccion);
+    }
+  } catch (e) {
+    // ignore
+  }
+  prediccionPollTimeout = setTimeout(pollPrediccionActual, POLL_INTERVAL_MS);
+}
+
 cargarAlertasIniciales();
 conectarWS();
+pollPrediccionActual();

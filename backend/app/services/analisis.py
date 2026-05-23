@@ -20,6 +20,7 @@ class AnalisisResult:
     aceleracion_temperatura: float | None = None
     aceleracion_vibracion: float | None = None
     correlacion: float | None = None
+    inactividad: float = 0.0
 
 
 class PredictiveEngine:
@@ -31,7 +32,7 @@ class PredictiveEngine:
     def agregar_lectura(self, temperatura: float, vibracion_total: float) -> None:
         self._buffer.append({"temp": temperatura, "vib": vibracion_total})
 
-    def analizar(self, temperatura: float, vibracion_total: float) -> AnalisisResult:
+    def analizar(self, temperatura: float, vibracion_total: float, tiempo_inactividad: float = 0.0) -> AnalisisResult:
         self.agregar_lectura(temperatura, vibracion_total)
 
         if len(self._buffer) < 5:
@@ -44,18 +45,21 @@ class PredictiveEngine:
         ace_vib = self._calcular_aceleracion("vib")
         corr = self._calcular_correlacion()
 
-        prob_temp = self._escala_lineal(abs(pend_temp or 0), 0.3)
-        prob_vib = self._escala_lineal(abs(pend_vib or 0), 0.05)
-        prob_corr = self._escala_lineal(abs(corr or 0), 0.6) * 0.6
-        prob_ace_temp = self._escala_lineal(max(0, ace_temp or 0), 0.03) * 0.7
-        prob_ace_vib = self._escala_lineal(max(0, ace_vib or 0), 0.008) * 0.7
         prob_umbral_temp = self._sigmoid(temperatura, k=0.8, x0=settings.temp_alerta_amarilla)
         prob_umbral_vib = self._sigmoid(vibracion_total, k=3, x0=settings.vibracion_alerta_amarilla)
+        prob_inactividad = self._sigmoid(tiempo_inactividad, k=0.08, x0=30)
+
+        prob_temp = self._escala_lineal(abs(pend_temp or 0), 0.3) * prob_umbral_temp
+        prob_vib = self._escala_lineal(abs(pend_vib or 0), 0.05) * prob_umbral_vib
+        prob_corr = self._escala_lineal(abs(corr or 0), 0.6) * 0.6 * max(prob_umbral_temp, prob_umbral_vib, prob_inactividad)
+        prob_ace_temp = self._escala_lineal(max(0, ace_temp or 0), 0.03) * 0.7 * prob_umbral_temp
+        prob_ace_vib = self._escala_lineal(max(0, ace_vib or 0), 0.008) * 0.7 * prob_umbral_vib
 
         probabilidad = min(1.0, max(
             prob_temp, prob_vib, prob_corr,
             prob_ace_temp, prob_ace_vib,
-            prob_umbral_temp, prob_umbral_vib
+            prob_umbral_temp, prob_umbral_vib,
+            prob_inactividad,
         ))
 
         rul = self._estimar_rul(temperatura, vibracion_total, pend_temp, pend_vib)
@@ -76,6 +80,7 @@ class PredictiveEngine:
             aceleracion_temperatura=round(ace_temp, 6) if ace_temp is not None else None,
             aceleracion_vibracion=round(ace_vib, 6) if ace_vib is not None else None,
             correlacion=round(corr, 4) if corr is not None else None,
+            inactividad=round(tiempo_inactividad, 1),
         )
         return self._ultimo_resultado
 
@@ -91,6 +96,22 @@ class PredictiveEngine:
     def reset(self) -> None:
         self._buffer.clear()
         self._ultimo_resultado = AnalisisResult()
+
+    def resultado_con_inactividad(self, tiempo_inactividad: float) -> AnalisisResult:
+        prob_inactividad = self._sigmoid(tiempo_inactividad, k=0.08, x0=30)
+        prob = max(self._ultimo_resultado.probabilidad, prob_inactividad)
+        return AnalisisResult(
+            probabilidad=round(prob, 4),
+            severidad=self._clasificar_severidad(prob),
+            modo_fallo=self._ultimo_resultado.modo_fallo,
+            rul_estimado=self._ultimo_resultado.rul_estimado,
+            pendiente_temperatura=self._ultimo_resultado.pendiente_temperatura,
+            pendiente_vibracion=self._ultimo_resultado.pendiente_vibracion,
+            aceleracion_temperatura=self._ultimo_resultado.aceleracion_temperatura,
+            aceleracion_vibracion=self._ultimo_resultado.aceleracion_vibracion,
+            correlacion=self._ultimo_resultado.correlacion,
+            inactividad=round(tiempo_inactividad, 1),
+        )
 
     def _calcular_pendiente(self, clave: str) -> float | None:
         if len(self._buffer) < 2:

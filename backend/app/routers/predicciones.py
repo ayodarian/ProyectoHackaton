@@ -4,18 +4,24 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.database import get_db
 from app.models.telemetria import PrediccionFallo
+from app.routers.telemetria import _ultimo_telemetria
 from app.schemas.telemetria import PrediccionActualResponse, PrediccionResponse
 from app.services.analisis import analizador
 from app.ws_manager import manager
+
 
 router = APIRouter(prefix="/api/predicciones", tags=["Predicciones"])
 
 
 @router.get("/actual", response_model=PrediccionActualResponse)
 async def prediccion_actual():
-    resultado = analizador._ultimo_resultado
+    ahora = datetime.now().timestamp()
+    ultimo = _ultimo_telemetria.get(1, ahora)
+    inactividad = ahora - ultimo
+    resultado = analizador.resultado_con_inactividad(inactividad)
     estado = manager.get_ultimo_estado(1)
     return PrediccionActualResponse(
         torno_id=1,
@@ -29,6 +35,7 @@ async def prediccion_actual():
             aceleracion_temperatura=resultado.aceleracion_temperatura,
             aceleracion_vibracion=resultado.aceleracion_vibracion,
             correlacion=resultado.correlacion,
+            inactividad=resultado.inactividad,
         ),
         estado_actual=estado,
     )

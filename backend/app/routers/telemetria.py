@@ -71,6 +71,7 @@ async def _verificar_alertas(
     vx: float,
     vy: float,
     vz: float,
+    tiempo_inactividad: float = 0.0,
 ) -> str | None:
     es_rojo = (
         temp >= settings.temp_emergencia_roja
@@ -113,7 +114,7 @@ async def _verificar_alertas(
         _ultimo_guardado[torno_id] = datetime.now().timestamp()
         return "EMERGENCIA_ROJA"
 
-    resultado = analizador.analizar(temp, vib_total)
+    resultado = analizador.analizar(temp, vib_total, tiempo_inactividad)
     es_predictivo = resultado.probabilidad >= 0.5
 
     if es_amarillo or es_predictivo:
@@ -192,13 +193,15 @@ async def recibir_telemetria(
 
     ahora = datetime.now().timestamp()
     ultimo = _ultimo_telemetria.get(data.torno_id, 0)
-    if ahora - ultimo > settings.intervalo_guardado_amarillo:
+    tiempo_inactividad = ahora - ultimo
+    if tiempo_inactividad > settings.intervalo_guardado_amarillo:
         analizador.reset()
     _ultimo_telemetria[data.torno_id] = ahora
 
     alerta_activa = await _verificar_alertas(
         db, data.torno_id, data.temperatura, vib_total,
         data.vibracion_x, data.vibracion_y, data.vibracion_z,
+        tiempo_inactividad,
     )
 
     paro = (
@@ -222,6 +225,7 @@ async def recibir_telemetria(
             "aceleracion_temperatura": resultado.aceleracion_temperatura,
             "aceleracion_vibracion": resultado.aceleracion_vibracion,
             "correlacion": resultado.correlacion,
+            "inactividad": resultado.inactividad,
         }
         await manager.broadcast_prediccion(data.torno_id, pred_dict)
 
@@ -235,6 +239,7 @@ async def recibir_telemetria(
                 pendiente_temperatura=resultado.pendiente_temperatura,
                 pendiente_vibracion=resultado.pendiente_vibracion,
                 correlacion=resultado.correlacion,
+                inactividad=resultado.inactividad,
             ))
             await db.commit()
 

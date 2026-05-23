@@ -64,6 +64,7 @@ class PrediccionFallo(Base):
     pendiente_temperatura: Mapped[float | None] = mapped_column(Float, nullable=True)
     pendiente_vibracion: Mapped[float | None] = mapped_column(Float, nullable=True)
     correlacion: Mapped[float | None] = mapped_column(Float, nullable=True)
+    inactividad: Mapped[float | None] = mapped_column(Float, nullable=True)
     timestamp: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now()
     )

@@ -64,6 +64,7 @@ class PrediccionResponse(BaseModel):
     aceleracion_temperatura: float | None = None
     aceleracion_vibracion: float | None = None
     correlacion: float | None = None
+    inactividad: float | None = None
     timestamp: datetime | None = None
 
     model_config = {"from_attributes": True}

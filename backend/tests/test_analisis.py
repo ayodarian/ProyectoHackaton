@@ -26,8 +26,8 @@ class TestPredictiveEngine:
 
     def test_tendencia_alza_vibracion_aumenta_probabilidad(self):
         engine = PredictiveEngine(ventana=50)
-        vib = 1.0
-        for _ in range(25):
+        vib = 2.5
+        for _ in range(20):
             res = engine.analizar(36.0, vib)
             vib += 0.04
         assert res.probabilidad >= 0.3
@@ -53,18 +53,18 @@ class TestPredictiveEngine:
 
     def test_clasificacion_severidad_observacion(self):
         engine = PredictiveEngine(ventana=50)
-        temp = 30.0
+        temp = 36.0
         for _ in range(30):
             res = engine.analizar(temp, 1.1)
-            temp += 0.1
+            temp += 0.08
         assert res.severidad in ("OBSERVACION", "ADVERTENCIA")
 
     def test_clasificacion_severidad_advertencia(self):
         engine = PredictiveEngine(ventana=50)
-        temp = 30.0
+        temp = 36.0
         for _ in range(30):
             res = engine.analizar(temp, 1.1)
-            temp += 0.2
+            temp += 0.15
         assert res.severidad in ("ADVERTENCIA", "CRITICA")
 
     def test_modo_termico_detectado(self):
@@ -105,3 +105,26 @@ class TestPredictiveEngine:
             vib += 0.03
         if res.correlacion is not None:
             assert res.correlacion > 0.3
+
+    def test_inactividad_cero_sin_efecto(self):
+        engine = PredictiveEngine(ventana=30)
+        temp = 30.0
+        for _ in range(10):
+            res = engine.analizar(temp, 1.0, tiempo_inactividad=0.0)
+            temp += 0.005
+        assert res.inactividad == 0.0
+
+    def test_inactividad_alta_aumenta_probabilidad(self):
+        engine = PredictiveEngine(ventana=30)
+        for _ in range(10):
+            res = engine.analizar(30.0, 1.0, tiempo_inactividad=60.0)
+        assert res.probabilidad > 0.5
+        assert res.inactividad == 60.0
+
+    def test_resultado_con_inactividad(self):
+        engine = PredictiveEngine(ventana=30)
+        for _ in range(10):
+            engine.analizar(30.0, 1.0)
+        res = engine.resultado_con_inactividad(120.0)
+        assert res.probabilidad > 0.5
+        assert res.inactividad == 120.0
