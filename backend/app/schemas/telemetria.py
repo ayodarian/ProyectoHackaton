@@ -1,6 +1,7 @@
 from datetime import datetime
+from math import sqrt
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class TelemetriaRequest(BaseModel):
@@ -25,10 +26,18 @@ class RegistroFalloResponse(BaseModel):
     vibracion_x: float
     vibracion_y: float
     vibracion_z: float
+    vibracion_total: float = 0.0
     tipo_alerta: str | None
     timestamp: datetime
 
     model_config = {"from_attributes": True}
+
+    @model_validator(mode='after')
+    def set_vibracion_total(self):
+        self.vibracion_total = sqrt(
+            self.vibracion_x**2 + self.vibracion_y**2 + self.vibracion_z**2
+        )
+        return self
 
 
 class AlertaResponse(BaseModel):

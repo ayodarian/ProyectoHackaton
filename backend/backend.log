@@ -1,8 +1,13 @@
-INFO:     Started server process [109492]
+INFO:     Started server process [110429]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:41644 - "GET /api/predicciones HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52836 - "WebSocket /ws/1" [accepted]
+INFO:     127.0.0.1:44182 - "GET /api/registros-fallo HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44186 - "GET /api/registros-fallo HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44194 - "WebSocket /ws/1" [accepted]
 INFO:     connection open
-INFO:     127.0.0.1:52842 - "POST /api/telemetria HTTP/1.1" 201 Created
+INFO:     127.0.0.1:44210 - "GET /api/registros-fallo?limite=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44214 - "POST /api/telemetria HTTP/1.1" 201 Created
+INFO:     127.0.0.1:44214 - "POST /api/telemetria HTTP/1.1" 201 Created
+INFO:     127.0.0.1:44214 - "POST /api/telemetria HTTP/1.1" 201 Created
+INFO:     127.0.0.1:44214 - "POST /api/telemetria HTTP/1.1" 201 Created
