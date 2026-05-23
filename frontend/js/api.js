@@ -39,3 +39,11 @@ async function fetchAlertas(noAtendidas = false) {
   const qs = noAtendidas ? "?no_atendidas=true" : "";
   return apiFetch(`/api/alertas${qs}`);
 }
+
+async function fetchPredicciones(filtros = {}) {
+  const params = new URLSearchParams();
+  if (filtros.severidad) params.set("severidad", filtros.severidad);
+  if (filtros.limite) params.set("limite", filtros.limite);
+  const qs = params.toString();
+  return apiFetch(`/api/predicciones${qs ? "?" + qs : ""}`);
+}

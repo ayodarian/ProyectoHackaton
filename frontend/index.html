@@ -165,6 +165,36 @@
         </table>
       </div>
 
+      <!-- PREDICCIONES -->
+      <div class="alertas-header" style="margin-top:24px">
+        <span>📊 Historial Predictivo</span>
+        <div class="alertas-header-right">
+          <select id="filtroPredSeveridad" class="filtro-btn" style="padding:4px 8px;font-size:13px">
+            <option value="">Todas las severidades</option>
+            <option value="NORMAL">✅ Normal</option>
+            <option value="OBSERVACION">🔵 Observación</option>
+            <option value="ADVERTENCIA">🟡 Advertencia</option>
+            <option value="CRITICA">🔴 Crítica</option>
+          </select>
+        </div>
+      </div>
+      <div class="tabla-wrapper">
+        <table class="tabla-registros" id="tablaPredicciones">
+          <thead>
+            <tr>
+              <th>Probabilidad</th>
+              <th>Severidad</th>
+              <th>Modo</th>
+              <th>Inactividad</th>
+              <th>Hora</th>
+            </tr>
+          </thead>
+          <tbody id="tablaPredBody">
+            <tr><td colspan="5" class="tabla-empty">Sin predicciones aún</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <!-- ALERTAS -->
       <div class="alertas-header" style="margin-top:24px">
         <span>Alertas en vivo</span>

@@ -61,6 +61,7 @@ async def listar_predicciones(
             pendiente_temperatura=r.pendiente_temperatura,
             pendiente_vibracion=r.pendiente_vibracion,
             correlacion=r.correlacion,
+            inactividad=r.inactividad,
             timestamp=r.timestamp,
         )
         for r in rows

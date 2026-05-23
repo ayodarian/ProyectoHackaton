@@ -64,6 +64,8 @@ const btnLimpiar = $("#btnLimpiar");
 const rapidoBtns = $$(".rapido-btn");
 const tablaBody = $("#tablaBody");
 const totalRegistros = $("#totalRegistros");
+const tablaPredBody = $("#tablaPredBody");
+const filtroPredSeveridad = $("#filtroPredSeveridad");
 
 /* ----- Tab Navigation ----- */
 tabs.forEach((btn) => {
@@ -74,7 +76,10 @@ tabs.forEach((btn) => {
     Object.entries(views).forEach(([k, el]) => {
       el.classList.toggle("active", k === view);
     });
-    if (view === "supervisor") cargarRegistros();
+    if (view === "supervisor") {
+      cargarRegistros();
+      cargarPredicciones();
+    }
   });
 });
 
@@ -288,6 +293,53 @@ async function cargarRegistros() {
   }
 }
 
+function severidadClase(s) {
+  if (s === "CRITICA") return "roja";
+  if (s === "ADVERTENCIA") return "amarilla";
+  if (s === "OBSERVACION") return "observacion";
+  return "normal";
+}
+
+function severidadHtml(s) {
+  if (s === "CRITICA") return '<span class="estado-badge rojo">🔴 Crítica</span>';
+  if (s === "ADVERTENCIA") return '<span class="estado-badge amarillo">🟡 Advertencia</span>';
+  if (s === "OBSERVACION") return '<span class="estado-badge azul">🔵 Observación</span>';
+  return '<span class="estado-badge verde">✅ Normal</span>';
+}
+
+async function cargarPredicciones() {
+  try {
+    const filtros = {};
+    const sv = filtroPredSeveridad.value;
+    if (sv) filtros.severidad = sv;
+    filtros.limite = 100;
+
+    const data = await fetchPredicciones(filtros);
+
+    if (data.length === 0) {
+      tablaPredBody.innerHTML = '<tr><td colspan="5" class="tabla-empty">Sin predicciones aún</td></tr>';
+      return;
+    }
+
+    tablaPredBody.innerHTML = data
+      .map((p) => {
+        const pct = Math.round(p.probabilidad * 100);
+        return `
+          <tr class="${severidadClase(p.severidad)}">
+            <td><strong>${pct}%</strong></td>
+            <td>${severidadHtml(p.severidad)}</td>
+            <td>${p.modo_fallo || "—"}</td>
+            <td>${p.inactividad != null ? p.inactividad + "s" : "—"}</td>
+            <td>${formatearFechaLocal(p.timestamp)}</td>
+          </tr>
+        `;
+      })
+      .join("");
+  } catch (e) {
+    tablaPredBody.innerHTML = `<tr><td colspan="5" class="tabla-empty">Error al cargar: ${e.message}</td></tr>`;
+  }
+}
+
 function limpiarFiltros() {
   filtroEstado.value = "";
   filtroDesdeFecha.value = "";
@@ -320,6 +372,8 @@ btnLimpiar.addEventListener("click", limpiarFiltros);
 rapidoBtns.forEach((btn) => {
   btn.addEventListener("click", () => aplicarRapido(parseInt(btn.dataset.minutos)));
 });
+
+filtroPredSeveridad.addEventListener("change", cargarPredicciones);
 
 /* ----- Exportar CSV ----- */
 btnExportarCSV.addEventListener("click", () => {
@@ -431,3 +485,5 @@ async function pollPrediccionActual() {
 cargarAlertasIniciales();
 conectarWS();
 pollPrediccionActual();
+cargarPredicciones();
+setInterval(cargarPredicciones, 10000);

@@ -396,6 +396,10 @@ body {
   border-left: 3px solid #00ff88;
 }
 
+.tabla-registros tr.observacion td {
+  border-left: 3px solid #58a6ff;
+}
+
 .tabla-empty {
   text-align: center;
   color: #484f58;
@@ -425,6 +429,11 @@ body {
 .estado-badge.verde {
   background: rgba(0, 255, 136, 0.1);
   color: #00ff88;
+}
+
+.estado-badge.azul {
+  background: rgba(88, 166, 255, 0.15);
+  color: #58a6ff;
 }
 
 /* ---- ALERTAS ---- */
