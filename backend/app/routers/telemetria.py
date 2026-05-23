@@ -20,6 +20,18 @@ from app.ws_manager import manager
 router = APIRouter(prefix="/api", tags=["Telemetria"])
 
 _ultimo_guardado: dict[int, float] = {}
+_ultima_alerta: dict[int, dict[str, float]] = {}
+
+
+def _puede_crear_alerta(torno_id: int, tipo: str) -> bool:
+    ahora = datetime.now().timestamp()
+    por_torno = _ultima_alerta.get(torno_id, {})
+    ultima = por_torno.get(tipo, 0)
+    if ahora - ultima < settings.intervalo_guardado_amarillo:
+        return False
+    por_torno[tipo] = ahora
+    _ultima_alerta[torno_id] = por_torno
+    return True
 
 
 def _calcular_vib_total(vx: float, vy: float, vz: float) -> float:
@@ -69,30 +81,34 @@ async def _verificar_alertas(
     )
 
     if es_rojo:
-        db.add(
-            RegistroFallo(
-                torno_id=torno_id,
-                temperatura=temp,
-                vibracion_x=vx,
-                vibracion_y=vy,
-                vibracion_z=vz,
-                tipo_alerta="EMERGENCIA_ROJA",
+        if _puede_guardar(torno_id):
+            db.add(
+                RegistroFallo(
+                    torno_id=torno_id,
+                    temperatura=temp,
+                    vibracion_x=vx,
+                    vibracion_y=vy,
+                    vibracion_z=vz,
+                    tipo_alerta="EMERGENCIA_ROJA",
+                )
             )
-        )
-        alerta = AlertaMantenimiento(
-            torno_id=torno_id,
-            tipo_alerta="EMERGENCIA_ROJA",
-            descripcion=(
-                f"PARO DE EMERGENCIA - Temperatura: {temp:.1f}°C, "
-                f"Vibración: {vib_total:.2f}G"
-            ),
-        )
-        db.add(alerta)
-        await db.commit()
-        await db.refresh(alerta)
-        await manager.broadcast_alerta(
-            torno_id, _alerta_to_dict(alerta)
-        )
+            await db.commit()
+
+        if _puede_crear_alerta(torno_id, "EMERGENCIA_ROJA"):
+            alerta = AlertaMantenimiento(
+                torno_id=torno_id,
+                tipo_alerta="EMERGENCIA_ROJA",
+                descripcion=(
+                    f"PARO DE EMERGENCIA - Temperatura: {temp:.1f}°C, "
+                    f"Vibración: {vib_total:.2f}G"
+                ),
+            )
+            db.add(alerta)
+            await db.commit()
+            await db.refresh(alerta)
+            await manager.broadcast_alerta(
+                torno_id, _alerta_to_dict(alerta)
+            )
         _ultimo_guardado[torno_id] = datetime.now().timestamp()
         return "EMERGENCIA_ROJA"
 
@@ -114,7 +130,7 @@ async def _verificar_alertas(
             )
             await db.commit()
 
-        if es_predictivo and not es_amarillo:
+        if es_predictivo and not es_amarillo and _puede_crear_alerta(torno_id, "PREDICTIVA_AMARILLA"):
             pend_vib = analizador.pendiente_vibracion() or 0
             incremento = pend_vib * 50 * 100
             reporte = await generar_reporte_tecnico(

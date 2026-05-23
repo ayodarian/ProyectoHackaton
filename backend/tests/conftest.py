@@ -7,7 +7,7 @@ from httpx import ASGITransport, AsyncClient
 
 from app.database import Base, engine, async_session
 from app.main import app
-from app.routers.telemetria import _ultimo_guardado
+from app.routers.telemetria import _ultima_alerta, _ultimo_guardado
 
 
 @pytest.fixture(scope="session")
@@ -20,6 +20,7 @@ def event_loop():
 @pytest_asyncio.fixture(autouse=True)
 async def setup_db():
     _ultimo_guardado.clear()
+    _ultima_alerta.clear()
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
