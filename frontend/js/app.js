@@ -359,6 +359,8 @@ function conectarWS() {
       if (msg.type === "prediccion") {
         updatePrediccion(msg.data);
       }
+
+      if (msg.type === "alerta") {
         const idx = alertas.findIndex((a) => a.id === msg.data.id);
         if (idx >= 0) {
           alertas[idx] = msg.data;
