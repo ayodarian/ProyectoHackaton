@@ -113,6 +113,7 @@ class TestPredictiveEngine:
             res = engine.analizar(temp, 1.0, tiempo_inactividad=0.0)
             temp += 0.005
         assert res.inactividad == 0.0
+        assert res.probabilidad < 0.01
 
     def test_inactividad_alta_aumenta_probabilidad(self):
         engine = PredictiveEngine(ventana=30)

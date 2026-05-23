@@ -47,7 +47,7 @@ class PredictiveEngine:
 
         prob_umbral_temp = self._sigmoid(temperatura, k=0.8, x0=settings.temp_alerta_amarilla)
         prob_umbral_vib = self._sigmoid(vibracion_total, k=3, x0=settings.vibracion_alerta_amarilla)
-        prob_inactividad = self._sigmoid(tiempo_inactividad, k=0.08, x0=30)
+        prob_inactividad = self._escala_lineal(tiempo_inactividad, 30)
 
         prob_temp = self._escala_lineal(abs(pend_temp or 0), 0.3) * prob_umbral_temp
         prob_vib = self._escala_lineal(abs(pend_vib or 0), 0.05) * prob_umbral_vib
@@ -98,7 +98,7 @@ class PredictiveEngine:
         self._ultimo_resultado = AnalisisResult()
 
     def resultado_con_inactividad(self, tiempo_inactividad: float) -> AnalisisResult:
-        prob_inactividad = self._sigmoid(tiempo_inactividad, k=0.08, x0=30)
+        prob_inactividad = self._escala_lineal(tiempo_inactividad, 30)
         prob = max(self._ultimo_resultado.probabilidad, prob_inactividad)
         return AnalisisResult(
             probabilidad=round(prob, 4),
