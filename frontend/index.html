@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema IIoT - Torno CNC</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">SISTEMA IIoT · TORNO CNC</div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" data-view="operador">🔧 Operador</button>
+      <button class="tab-btn" data-view="supervisor">📱 Supervisor</button>
+    </div>
+    <div class="nav-status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Conectando...</span>
+    </div>
+  </nav>
+
+  <main>
+    <!-- OPERATOR VIEW -->
+    <section id="view-operador" class="view active">
+      <div class="panel-control" id="panelOperador">
+        <div class="panel-icon" id="panelIcon">🟢</div>
+        <div class="panel-info">
+          <div class="panel-modo" id="panelModo">OPERACIÓN NORMAL</div>
+          <div class="panel-torno" id="panelTorno">Torno #1</div>
+        </div>
+        <div class="panel-valores">
+          <div class="panel-valor" id="panelTemp">--°C</div>
+          <div class="panel-valor" id="panelVib">--G</div>
+        </div>
+      </div>
+
+      <div class="gauges">
+        <div class="gauge-card">
+          <div class="gauge-header">Temperatura</div>
+          <div class="gauge-bar-bg">
+            <div class="gauge-bar" id="gaugeTemp" style="width:0%"></div>
+          </div>
+          <div class="gauge-value" id="gaugeTempValue">-- °C</div>
+        </div>
+        <div class="gauge-card">
+          <div class="gauge-header">Vibración Total</div>
+          <div class="gauge-bar-bg">
+            <div class="gauge-bar" id="gaugeVib" style="width:0%"></div>
+          </div>
+          <div class="gauge-value" id="gaugeVibValue">-- G</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUPERVISOR VIEW -->
+    <section id="view-supervisor" class="view">
+      <div class="panel-control" id="panelSupervisor">
+        <div class="panel-icon" id="sPanelIcon">🟢</div>
+        <div class="panel-info">
+          <div class="panel-modo" id="sPanelModo">OPERACIÓN NORMAL</div>
+          <div class="panel-torno" id="sPanelTorno">Torno #1</div>
+        </div>
+        <div class="panel-valores">
+          <div class="panel-valor" id="sPanelTemp">--°C</div>
+          <div class="panel-valor" id="sPanelVib">--G</div>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="filtros">
+        <div class="filtros-titulo">🔍 Filtrar registros de fallo (DB)</div>
+        <div class="filtros-grid">
+          <div class="filtro-grupo">
+            <label>Estado</label>
+            <select id="filtroEstado">
+              <option value="">Todos</option>
+              <option value="PREDICTIVA_AMARILLA">🟡 Alerta Amarilla</option>
+              <option value="EMERGENCIA_ROJA">🔴 Emergencia Roja</option>
+            </select>
+          </div>
+          <div class="filtro-grupo">
+            <label>Desde</label>
+            <input type="date" id="filtroDesdeFecha">
+            <input type="time" id="filtroDesdeHora" style="margin-top:4px">
+          </div>
+          <div class="filtro-grupo">
+            <label>Hasta</label>
+            <input type="date" id="filtroHastaFecha">
+            <input type="time" id="filtroHastaHora" style="margin-top:4px">
+          </div>
+          <div class="filtro-grupo filtro-botones">
+            <label>&nbsp;</label>
+            <div>
+              <button class="filtro-btn" id="btnFiltrar">🔍 Filtrar</button>
+              <button class="filtro-btn secundario" id="btnLimpiar">✕ Limpiar</button>
+            </div>
+          </div>
+        </div>
+        <div class="filtro-rapidos">
+          <span>Rápido:</span>
+          <button class="rapido-btn" data-minutos="60">1h</button>
+          <button class="rapido-btn" data-minutos="360">6h</button>
+          <button class="rapido-btn" data-minutos="1440">24h</button>
+          <button class="rapido-btn" data-minutos="10080">7d</button>
+          <button class="rapido-btn" data-minutos="0">Todo</button>
+        </div>
+      </div>
+
+      <!-- RESULTS TABLE -->
+      <div class="resultados-header">
+        <span>Registros encontrados: <strong id="totalRegistros">0</strong></span>
+      </div>
+      <div class="tabla-wrapper">
+        <table class="tabla-registros" id="tablaRegistros">
+          <thead>
+            <tr>
+              <th>Temperatura</th>
+              <th>Vibración</th>
+              <th>Estado</th>
+              <th>Hora</th>
+            </tr>
+          </thead>
+          <tbody id="tablaBody">
+            <tr><td colspan="4" class="tabla-empty">Usa los filtros y presiona "Filtrar"</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ALERTAS -->
+      <div class="alertas-header" style="margin-top:24px">
+        <span>Alertas en vivo</span>
+        <div class="alertas-header-right">
+          <span class="alerta-badge" id="alertaBadge">0 pendientes</span>
+          <button class="filtro-btn" id="btnExportarCSV" title="Exportar historial a CSV">⬇ CSV</button>
+        </div>
+      </div>
+      <div class="alertas-lista" id="alertasLista">
+        <div class="alerta-empty">Sin alertas registradas</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

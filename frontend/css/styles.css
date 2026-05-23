@@ -1,0 +1,548 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  background: #0a0f1a;
+  color: #e6edf3;
+  min-height: 100vh;
+}
+
+/* ---- NAVBAR (GitHub Dark header + opencode brand) ---- */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: #161b22;
+  border-bottom: 1px solid #21262d;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.nav-brand {
+  color: #00ff88;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.tab-btn {
+  background: transparent;
+  color: #8b949e;
+  border: 1px solid #30363d;
+  padding: 7px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  border-color: #2f81f7;
+  color: #e6edf3;
+}
+
+.tab-btn.active {
+  background: #2f81f7;
+  color: #ffffff;
+  border-color: #2f81f7;
+}
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #da3633;
+  transition: background 0.3s;
+}
+
+.status-dot.online {
+  background: #00ff88;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+}
+
+/* ---- VIEWS ---- */
+.view {
+  display: none;
+  padding: 24px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.view.active {
+  display: block;
+}
+
+/* ---- PANEL CONTROL (GitHub card + opencode border) ---- */
+.panel-control {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #0d1b2a;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #21262d;
+  border-left: 5px solid #00ff88;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.panel-control.emergencia {
+  border-left-color: #da3633;
+  background: #1c0e10;
+}
+
+.panel-control.alerta {
+  border-left-color: #d29922;
+  background: #1a140e;
+}
+
+.panel-icon {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.panel-info {
+  flex: 1;
+}
+
+.panel-modo {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.panel-torno {
+  font-size: 13px;
+  color: #8b949e;
+  margin-top: 3px;
+}
+
+.panel-valores {
+  text-align: right;
+}
+
+.panel-valor {
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+/* ---- GAUGES (opencode bar + GitHub label style) ---- */
+.gauges {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gauge-card {
+  background: #0d1b2a;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #21262d;
+}
+
+.gauge-header {
+  color: #8b949e;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.gauge-bar-bg {
+  height: 22px;
+  background: #21262d;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.gauge-bar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.3s ease, background 0.3s;
+}
+
+.gauge-value {
+  font-size: 26px;
+  font-weight: 600;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+  font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+  transition: color 0.3s;
+}
+
+/* ---- FILTROS (GitHub dark card style) ---- */
+.filtros {
+  background: #0d1b2a;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  border: 1px solid #21262d;
+}
+
+.filtros-titulo {
+  color: #8b949e;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.filtros-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+}
+
+@media (min-width: 700px) {
+  .filtros-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr auto;
+  }
+}
+
+.filtro-grupo label {
+  display: block;
+  color: #8b949e;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.filtro-grupo select,
+.filtro-grupo input {
+  width: 100%;
+  background: #0d1117;
+  color: #e6edf3;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filtro-grupo select:focus,
+.filtro-grupo input:focus {
+  border-color: #2f81f7;
+  box-shadow: 0 0 0 3px rgba(47,129,247,0.15);
+}
+
+.filtro-grupo select option {
+  background: #0d1117;
+  color: #e6edf3;
+}
+
+.filtro-botones div {
+  display: flex;
+  gap: 8px;
+}
+
+.filtro-btn {
+  background: #2f81f7;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.filtro-btn:hover {
+  background: #388bfd;
+}
+
+.filtro-btn.secundario {
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #8b949e;
+}
+
+.filtro-btn.secundario:hover {
+  border-color: #da3633;
+  color: #da3633;
+}
+
+.filtro-rapidos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #21262d;
+}
+
+.filtro-rapidos span {
+  color: #8b949e;
+  font-size: 12px;
+}
+
+.rapido-btn {
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.rapido-btn:hover {
+  border-color: #2f81f7;
+  color: #e6edf3;
+}
+
+.rapido-btn.activo {
+  background: #2f81f7;
+  color: #ffffff;
+  border-color: #2f81f7;
+}
+
+/* ---- TABLA (GitHub style) ---- */
+.resultados-header {
+  display: flex;
+  justify-content: space-between;
+  color: #8b949e;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.tabla-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #21262d;
+}
+
+.tabla-registros {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.tabla-registros th {
+  background: #161b22;
+  color: #8b949e;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #21262d;
+}
+
+.tabla-registros td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #21262d;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla-registros tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-registros tr:nth-child(even) td {
+  background: #0d1117;
+}
+
+.tabla-registros tr:hover td {
+  background: #161b22;
+}
+
+.tabla-registros tr.roja td {
+  border-left: 3px solid #da3633;
+}
+
+.tabla-registros tr.amarilla td {
+  border-left: 3px solid #d29922;
+}
+
+.tabla-registros tr.normal td {
+  border-left: 3px solid #00ff88;
+}
+
+.tabla-empty {
+  text-align: center;
+  color: #484f58;
+  padding: 32px !important;
+}
+
+.estado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.estado-badge.rojo {
+  background: rgba(218, 54, 51, 0.15);
+  color: #ff6b6b;
+}
+
+.estado-badge.amarillo {
+  background: rgba(210, 153, 34, 0.15);
+  color: #e3b341;
+}
+
+.estado-badge.verde {
+  background: rgba(0, 255, 136, 0.1);
+  color: #00ff88;
+}
+
+/* ---- ALERTAS ---- */
+.alertas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #8b949e;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+
+.alertas-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alerta-badge {
+  background: #161b22;
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: #d29922;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+  border: 1px solid #30363d;
+}
+
+.alertas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alerta-card {
+  background: #0d1b2a;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #21262d;
+  border-left: 4px solid #00ff88;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.alerta-card:hover {
+  background: #161b22;
+}
+
+.alerta-card.roja {
+  border-left-color: #da3633;
+}
+
+.alerta-card.amarilla {
+  border-left-color: #d29922;
+}
+
+.alerta-card.atendida {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.alerta-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.alerta-tipo {
+  font-weight: 600;
+  font-size: 14px;
+  color: #e6edf3;
+}
+
+.alerta-fecha {
+  color: #8b949e;
+  font-size: 12px;
+}
+
+.alerta-desc {
+  color: #8b949e;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.alerta-atendida {
+  color: #00ff88;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.alerta-empty {
+  color: #484f58;
+  text-align: center;
+  padding: 32px;
+  font-size: 14px;
+}
+
+/* ---- PULSOS (GitHub red/yellow tints on opencode dark) ---- */
+@keyframes pulseRojo {
+  0%, 100% { background-color: #0a0f1a; }
+  50% { background-color: #1c0e10; }
+}
+
+@keyframes pulseAmarillo {
+  0%, 100% { background-color: #0a0f1a; }
+  50% { background-color: #1a140e; }
+}
+
+body.emergencia-bg {
+  animation: pulseRojo 1.2s infinite;
+}
+
+body.alerta-bg {
+  animation: pulseAmarillo 1.2s infinite;
+}

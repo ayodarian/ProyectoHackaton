@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+backend/venv/
+backend/.pytest_cache/
+
+# Database
+backend/sistema_iiot.db
+
+# Arduino build artifacts
+/tmp/arduino-build/
+
+# macOS
+.DS_Store

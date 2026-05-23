@@ -1,0 +1,4 @@
+devices:
+  - port: /dev/ttyUSB0
+    torno_id: 1
+    baudrate: 9600
