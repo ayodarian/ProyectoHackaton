@@ -129,3 +129,13 @@ class TestPredictiveEngine:
         res = engine.resultado_con_inactividad(120.0)
         assert res.probabilidad > 0.5
         assert res.inactividad == 120.0
+
+    def test_ajuste_ia_blending(self):
+        prob_mate = 0.5
+        prob_ia = 0.8
+        prob_final = round(prob_mate * 0.7 + prob_ia * 0.3, 4)
+        assert prob_final == 0.59
+        prob_mate2 = 0.2
+        prob_ia2 = 0.1
+        prob_final2 = round(prob_mate2 * 0.7 + prob_ia2 * 0.3, 4)
+        assert prob_final2 == 0.17

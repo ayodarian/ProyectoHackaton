@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     vibracion_emergencia_roja: float = 4.0
     ventana_analisis: int = 50
     intervalo_guardado_amarillo: int = 30
+    intervalo_ajuste_ia: int = 30
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

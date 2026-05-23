@@ -14,7 +14,11 @@ from app.models.telemetria import (
 )
 from app.schemas.telemetria import TelemetriaRequest, TelemetriaResponse
 from app.services.analisis import analizador
-from app.services.ollama_client import clasificar_fallo_ollama, generar_reporte_tecnico
+from app.services.ollama_client import (
+    ajustar_probabilidad_ollama,
+    clasificar_fallo_ollama,
+    generar_reporte_tecnico,
+)
 from app.ws_manager import manager
 
 router = APIRouter(prefix="/api", tags=["Telemetria"])
@@ -22,6 +26,7 @@ router = APIRouter(prefix="/api", tags=["Telemetria"])
 _ultimo_guardado: dict[int, float] = {}
 _ultima_alerta: dict[int, dict[str, float]] = {}
 _ultimo_telemetria: dict[int, float] = {}
+_ultima_consulta_ia: dict[int, float] = {}
 
 
 def _puede_crear_alerta(torno_id: int, tipo: str) -> bool:
@@ -214,9 +219,26 @@ async def recibir_telemetria(
     )
 
     resultado = analizador._ultimo_resultado
-    if resultado.probabilidad > 0:
+    prob_matematica = resultado.probabilidad
+
+    prob_final = prob_matematica
+    if prob_matematica > 0:
+        ahora_ia = datetime.now().timestamp()
+        ultima_ia = _ultima_consulta_ia.get(data.torno_id, 0)
+        if ahora_ia - ultima_ia >= settings.intervalo_ajuste_ia:
+            _ultima_consulta_ia[data.torno_id] = ahora_ia
+            probabilidad_ia = await ajustar_probabilidad_ollama(
+                data.torno_id, data.temperatura, vib_total,
+                resultado.pendiente_temperatura,
+                resultado.pendiente_vibracion,
+                resultado.correlacion,
+                prob_matematica,
+            )
+            prob_final = round(prob_matematica * 0.7 + probabilidad_ia * 0.3, 4)
+
+    if prob_final > 0:
         pred_dict = {
-            "probabilidad": resultado.probabilidad,
+            "probabilidad": prob_final,
             "severidad": resultado.severidad,
             "modo_fallo": resultado.modo_fallo,
             "rul_estimado": resultado.rul_estimado,
@@ -229,10 +251,10 @@ async def recibir_telemetria(
         }
         await manager.broadcast_prediccion(data.torno_id, pred_dict)
 
-        if resultado.probabilidad >= 0.3:
+        if prob_final >= 0.3:
             db.add(PrediccionFallo(
                 torno_id=data.torno_id,
-                probabilidad=resultado.probabilidad,
+                probabilidad=prob_final,
                 severidad=resultado.severidad,
                 modo_fallo=resultado.modo_fallo,
                 rul_estimado=resultado.rul_estimado,

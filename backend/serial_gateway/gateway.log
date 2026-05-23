@@ -1,0 +1,3 @@
+[gateway] starting with 1 device(s)
+[t#1] opened /dev/ttyUSB0 @ 9600 baud
+[t#1] WS connected

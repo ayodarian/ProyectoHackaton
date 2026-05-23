@@ -72,6 +72,51 @@ async def clasificar_fallo_ollama(
     return fallback
 
 
+async def ajustar_probabilidad_ollama(
+    torno_id: int,
+    temperatura: float,
+    vibracion_total: float,
+    pendiente_temp: float | None,
+    pendiente_vib: float | None,
+    correlacion: float | None,
+    prob_matematica: float,
+) -> float:
+    prompt = (
+        f"Eres un afinador de probabilidades de fallo para un torno CNC. "
+        f"Analiza si la probabilidad matemática subestima o sobreestima el riesgo real "
+        f"considerando correlaciones sutiles y patrones que un modelo lineal no captura.\n\n"
+        f"Torno #{torno_id}\n"
+        f"Temperatura: {temperatura:.1f}°C\n"
+        f"Vibración: {vibracion_total:.2f}G\n"
+        f"Tendencia temperatura: {pendiente_temp or 0:.4f} °C/lectura\n"
+        f"Tendencia vibración: {pendiente_vib or 0:.4f} G/lectura\n"
+        f"Correlación temp-vib: {correlacion or 0:.2f}\n"
+        f"Probabilidad matemática: {prob_matematica:.2f}\n\n"
+        f"Responde SOLO con JSON: "
+        f'{{"probabilidad_ia": 0.X, "justificacion": "una oración"}}'
+    )
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        try:
+            response = await client.post(
+                f"{settings.ollama_url}/api/generate",
+                json={"model": settings.ollama_model, "prompt": prompt, "stream": False},
+            )
+            response.raise_for_status()
+            data = response.json()
+            texto = data.get("response", "")
+            inicio = texto.find("{")
+            fin = texto.rfind("}") + 1
+            if inicio >= 0 and fin > inicio:
+                parsed = json.loads(texto[inicio:fin])
+                ia = float(parsed.get("probabilidad_ia", prob_matematica))
+                return max(0.0, min(1.0, ia))
+        except Exception:
+            pass
+
+    return prob_matematica
+
+
 async def generar_reporte_tecnico(
     torno_id: int,
     incremento_vibracion: float,
