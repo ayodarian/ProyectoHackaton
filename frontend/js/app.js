@@ -4,6 +4,8 @@ const WS_PORT = 8000;
 let ws = null;
 let alertas = [];
 let reconnectTimeout = null;
+let estadoTimeout = null;
+const ESTADO_TIMEOUT_MS = 10000;
 
 /* ----- DOM refs ----- */
 const $ = (s) => document.querySelector(s);
@@ -277,6 +279,16 @@ btnExportarCSV.addEventListener("click", () => {
 });
 
 /* ----- WebSocket ----- */
+function reiniciarWatchdog() {
+  clearTimeout(estadoTimeout);
+  statusDot.classList.add("online");
+  statusText.textContent = "Conectado · Torno #1";
+  estadoTimeout = setTimeout(() => {
+    statusDot.classList.remove("online");
+    statusText.textContent = "Sin datos · Torno #1";
+  }, ESTADO_TIMEOUT_MS);
+}
+
 function conectarWS() {
   if (ws) {
     ws.onclose = null;
@@ -289,7 +301,11 @@ function conectarWS() {
 
   ws.onopen = () => {
     statusDot.classList.add("online");
-    statusText.textContent = "Conectado · Torno #1";
+    statusText.textContent = "Esperando datos...";
+    estadoTimeout = setTimeout(() => {
+      statusDot.classList.remove("online");
+      statusText.textContent = "Sin datos · Torno #1";
+    }, ESTADO_TIMEOUT_MS);
   };
 
   ws.onmessage = (event) => {
@@ -298,6 +314,7 @@ function conectarWS() {
 
       if (msg.type === "estado") {
         const e = msg.data;
+        reiniciarWatchdog();
         updatePanel(panelO, pIcon, pModo, pTorno, pTemp, pVib, e);
         updatePanel(panelS, sIcon, sModo, sTorno, sTemp, sVib, e);
         updateGauges(e);
@@ -320,6 +337,7 @@ function conectarWS() {
   };
 
   ws.onclose = () => {
+    clearTimeout(estadoTimeout);
     statusDot.classList.remove("online");
     statusText.textContent = "Desconectado · reconectando...";
     reconnectTimeout = setTimeout(conectarWS, 3000);
