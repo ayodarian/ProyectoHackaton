@@ -5,7 +5,7 @@ let ws = null;
 let alertas = [];
 let reconnectTimeout = null;
 let estadoTimeout = null;
-const ESTADO_TIMEOUT_MS = 10000;
+const ESTADO_TIMEOUT_MS = 3000;
 
 /* ----- DOM refs ----- */
 const $ = (s) => document.querySelector(s);
