@@ -113,6 +113,8 @@ async def read_serial(conn: DeviceConnection) -> None:
 
         try:
             msg = json.loads(line)
+            if not isinstance(msg, dict):
+                continue
         except json.JSONDecodeError:
             continue
 

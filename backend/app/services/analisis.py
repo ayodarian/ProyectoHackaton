@@ -98,7 +98,10 @@ class PredictiveEngine:
         self._ultimo_resultado = AnalisisResult()
 
     def resultado_con_inactividad(self, tiempo_inactividad: float) -> AnalisisResult:
-        prob_inactividad = self._escala_lineal(tiempo_inactividad, 30)
+        if len(self._buffer) == 0:
+            prob_inactividad = 0.0
+        else:
+            prob_inactividad = self._escala_lineal(tiempo_inactividad, 30)
         prob = max(self._ultimo_resultado.probabilidad, prob_inactividad)
         return AnalisisResult(
             probabilidad=round(prob, 4),
