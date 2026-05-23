@@ -1,0 +1,6 @@
+127.0.0.1 - - [23/May/2026 07:52:46] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 07:52:46] "GET /css/styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 07:52:46] "GET /js/api.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 07:52:46] "GET /js/app.js HTTP/1.1" 200 -
+127.0.0.1 - - [23/May/2026 07:52:46] code 404, message File not found
+127.0.0.1 - - [23/May/2026 07:52:46] "GET /favicon.ico HTTP/1.1" 404 -
